@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: totoml
+Version: 1.0.0
+Summary: TotoML SDK for Python
+Home-page: https://github.com/nicolasances/py-totoml
+Author: nicolasances
+Author-email: nicolasances@gmail.com
+License: UNKNOWN
+Description: # TotoML Python SDK
+        This library is an SDK for Toto ML
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

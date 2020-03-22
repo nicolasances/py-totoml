@@ -44,6 +44,8 @@ class ModelController:
         self.model_delegate = model_delegate
         self.ms_name = 'model-{}'.format(self.model_delegate.get_name())
 
+        lock = ConcurrencyHelper(self.model_folder)
+
         # Generate a correlation ID for all init operations
         correlation_id = cid()
         
@@ -62,7 +64,27 @@ class ModelController:
         model_info = registry.get_model_info(self.model_delegate.get_name())
 
         if model_info is None: 
-            model_info = registry.create_model(self.model_delegate.get_name())
+
+            # Put a lock in order to avoid race conditions on the creation of the model
+            if lock.lock():
+                # Create the model
+                model_info = registry.create_model(self.model_delegate.get_name())
+                # Release the locl
+                lock.release()
+            else: 
+                # Wait till there is no lock file
+                while not lock.lock(): 
+                    logger.compute(ctx.correlation_id, '[ {context} ] - Waiting 30 seconds for other process to Create the Model on Toto ML Registry'.format(context=ctx.process), 'info')
+                    time.sleep(5)
+                
+                lock.release()
+
+                logger.compute(ctx.correlation_id, '[ {context} ] - Waiting complete: loading model information from Toto ML Registry.format(context=ctx.process), 'info')
+
+                # Load the information that the other process has created
+                model_info = registry.get_model_info(self.model_delegate.get_name())
+
+
 
         # Check if there's a champion model (pickle file, other files, ...) published on GCP Storage
         # If there's no model, upload the default model (local)
@@ -72,8 +94,6 @@ class ModelController:
         model_files = storage.load_champion_model(model_info, self.champion_folder)
 
         if model_files is None: 
-
-            lock = ConcurrencyHelper(self.model_folder)
 
             # Make sure there's not another python process doing the training
             # Check for the semaphore

@@ -79,7 +79,7 @@ class ModelController:
                 
                 lock.release()
 
-                logger.compute(ctx.correlation_id, '[ {context} ] - Waiting complete: loading model information from Toto ML Registry.format(context=ctx.process), 'info')
+                logger.compute(ctx.correlation_id, '[ {context} ] - Waiting complete: loading model information from Toto ML Registry'.format(context=ctx.process), 'info')
 
                 # Load the information that the other process has created
                 model_info = registry.get_model_info(self.model_delegate.get_name())

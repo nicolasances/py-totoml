@@ -147,3 +147,35 @@ class TotoMLRegistry:
         logger.compute(self.correlation_id, '[ {process} ] - [ POSTING ] - Updated metrics of champion model'.format(process=self.context.process), 'info')
 
         return 
+    
+    def put_model_status(self, model_name, status): 
+        """
+        Updates the status of the model on Toto ML Registry
+
+        Parameters
+        ----------
+        model_name (str)
+            The name of the model
+
+        status (dict)
+            A dictionnary describing the status of this model
+            Accepted keys: 'trainingStatus', 'scoringStatus', 'promotionStatus'
+            Accepted values:
+            - trainingStatus: 'training', 'not-training'
+        """
+        response = requests.post(
+            'https://{host}/apis/totoml/registry/models/{model}/status'.format(host=toto_host, model=model_name),
+            headers={
+                'Accept': 'application/json',
+                'Authorization': toto_auth,
+                'x-correlation-id': self.correlation_id
+            }, 
+            json=status
+        )
+
+        if response.status_code != 201 || response.status_code != 200: 
+            logger.compute(self.correlation_id, '[ {process} ] - [ STATUS UPDATE ] - Something went wrong when updating the status on Toto ML Model Registry for model {model}. Response: {content}'.format(process=self.context.process, model=model_name, content=response.content), 'error')
+
+        logger.compute(self.correlation_id, '[ {process} ] - [ STATUS UPDATE ] - Updated status of model'.format(process=self.context.process), 'info')
+
+        return 

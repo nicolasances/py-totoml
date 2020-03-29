@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="totoml", # Replace with your own username
-    version="1.0.3",
+    version="1.1.0",
     author="nicolasances",
     author_email="nicolasances@gmail.com",
     description="TotoML SDK for Python",

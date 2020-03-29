@@ -173,9 +173,6 @@ class TotoMLRegistry:
             json=status
         )
 
-        if response.status_code != 201 and response.status_code != 200: 
-            logger.compute(self.correlation_id, '[ {process} ] - [ STATUS UPDATE ] - Something went wrong when updating the status on Toto ML Model Registry for model {model}. Response: {content}'.format(process=self.context.process, model=model_name, content=response.content), 'error')
-
         logger.compute(self.correlation_id, '[ {process} ] - [ STATUS UPDATE ] - Updated status of model'.format(process=self.context.process), 'info')
 
         return 

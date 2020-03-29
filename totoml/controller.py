@@ -75,7 +75,7 @@ class ModelController:
             else: 
                 # Wait till there is no lock file
                 while not lock.lock(): 
-                    logger.compute(ctx.correlation_id, '[ {context} ] - Waiting 30 seconds for other process to Create the Model on Toto ML Registry'.format(context=ctx.process), 'info')
+                    logger.compute(ctx.correlation_id, '[ {context} ] - Waiting 5 seconds for other process to Create the Model on Toto ML Registry'.format(context=ctx.process), 'info')
                     time.sleep(5)
                 
                 lock.release()
@@ -197,7 +197,6 @@ class ModelController:
 
             return resp
 
-
     def train(self, request=None): 
         """
         Retrains the model 
@@ -209,6 +208,11 @@ class ModelController:
 
         ctx = ModelExecutionContext(correlation_id, 'TRAINING')
 
+        registry = TotoMLRegistry(ctx);
+
+        # Update the model's status to "training"
+        registry.put_model_status(self.model.info['name'], {"trainingStatus": "training"})
+
         # Trigger the training process
         retrained_model = self.model_delegate.train(self.model.info, ctx)
 
@@ -216,10 +220,13 @@ class ModelController:
         GCPStorage(ctx).save_retrained_model(self.model.info, retrained_model)
 
         # Publish the trained model on the Toto ML Registry
-        TotoMLRegistry(ctx).post_retrained_model(self.model.info['name'], retrained_model.score)
+        registry.post_retrained_model(self.model.info['name'], retrained_model.score)
 
         # Delete all the files : trained_model_files and trainining_data_files
         retrained_model.delete_files(ctx)
+
+        # Update the model's status to "not-training"
+        registry.put_model_status(self.model.info['name'], {"trainingStatus": "not-training"})
 
         return {"success": True, "message": "Model {} trained successfully".format(self.model.info['name'])}
 

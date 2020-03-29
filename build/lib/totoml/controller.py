@@ -44,17 +44,18 @@ class ModelController:
         self.model_delegate = model_delegate
         self.ms_name = 'model-{}'.format(self.model_delegate.get_name())
 
+        # Make sure that the folder structure is there
+        self.model_folder = "{bf}/{model}".format(bf=os.environ['TOTO_TMP_FOLDER'], model=self.model_delegate.get_name())
+        self.champion_folder = "{model_folder}/champion".format(model_folder=self.model_folder)
+        os.makedirs(name=self.champion_folder, exist_ok=True)
+
+        # Create the concurrency helper, that will help creating locks on race-sensitive initialization code
         lock = ConcurrencyHelper(self.model_folder)
 
         # Generate a correlation ID for all init operations
         correlation_id = cid()
         
         ctx = ModelExecutionContext(correlation_id, 'INIT')
-
-        # Make sure that the folder structure is there
-        self.model_folder = "{bf}/{model}".format(bf=os.environ['TOTO_TMP_FOLDER'], model=self.model_delegate.get_name())
-        self.champion_folder = "{model_folder}/champion".format(model_folder=self.model_folder)
-        os.makedirs(name=self.champion_folder, exist_ok=True)
 
         # Load the model information from Toto ML Registry API
         # Check if the model exists on the registry. 

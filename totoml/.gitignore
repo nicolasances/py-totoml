@@ -1,2 +1,3 @@
 # Ignore the caches
 __pycache__
+remote/__pycache__

@@ -47,6 +47,32 @@ class TotoMLRegistry:
 
         return model
 
+    def update_model_sdk_version(self, model_name, new_version): 
+        """
+        Updates the model's Toto ML Python SDK version to the one actually used 
+        in this module.
+
+        Parameters
+        ----------
+        model_name (str)
+            The name of the model
+
+        new_version (str)
+            The new version to replace the one present in Toto ML Registry
+        
+        """
+        logger.compute(self.correlation_id, '[ {process} ] - Updating [{model}] Python SDK version in Toto ML Model Registry'.format(process=self.context.process, model=model_name), 'info')
+
+        response = requests.put(
+            'https://{host}/apis/totoml/registry/models/{name}'.format(host=toto_host, name=model_name),
+            headers={
+                'Accept': 'application/json',
+                'Authorization': toto_auth,
+                'x-correlation-id': self.correlation_id
+            }, 
+            json={"totomlPythonSDKVersion": new_version}
+        )
+
     def create_model(self, model_name): 
         """
         Creates a new model on the TotoML Registry

@@ -60,12 +60,17 @@ class ModelController:
         ctx = ModelExecutionContext(correlation_id, 'INIT')
 
         # Load the model information from Toto ML Registry API
-        # Check if the model exists on the registry. 
-        # If it does not, create it.
         registry = TotoMLRegistry(ctx)
 
         model_info = registry.get_model_info(self.model_delegate.get_name())
 
+        # Make sure that the totoml SDK version registered in model_info is correct, otherwise correct it
+        if model_info is not None and ("totomlPythonSDKVersion" not in model_info is None or model_info['totomlPythonSDKVersion'] != version()): 
+            # Correct it
+            registry.update_model_sdk_version(self.model_delegate.get_name(), version())
+
+        # Check if the model exists on the registry. 
+        # If it does not, create it.
         if model_info is None: 
 
             # Put a lock in order to avoid race conditions on the creation of the model

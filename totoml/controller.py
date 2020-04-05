@@ -14,6 +14,8 @@ from totoml.context import ModelExecutionContext
 from totoml.cid import cid
 from totoml.concurrent import ConcurrencyHelper
 
+from version import version
+
 logger = TotoLogger()
 
 class ModelController: 
@@ -191,6 +193,15 @@ class ModelController:
             correlation_id = request.headers['x-correlation-id']
 
             resp = jsonify(self.predict(data, correlation_id, online=True))
+            resp.status_code = 200
+            resp.headers['Content-Type'] = 'application/json'
+
+            return resp
+
+        @flask_app.route('/totomlversion', methods=['GET'])
+        def totoml_version():
+
+            resp = jsonify({"totoMLVersion": version()})
             resp.status_code = 200
             resp.headers['Content-Type'] = 'application/json'
 

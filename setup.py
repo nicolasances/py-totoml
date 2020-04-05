@@ -1,11 +1,12 @@
 import setuptools 
+from version import version
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="totoml", # Replace with your own username
-    version="2.0.0",
+    version=version(),
     author="nicolasances",
     author_email="nicolasances@gmail.com",
     description="TotoML SDK for Python",

@@ -61,10 +61,22 @@ class TrainedModel:
             {
                 "obj_name": <filepath>
             }
-        
-        training_data_files (ist)
+
+            Toto ML requires the files to be passed, because it will delete them from the filesystem after 
+            all mandatory operations have been performed, in order to avoid unnecessary local disk consumption. 
+            
+            IMPORTANT!
+            Note that Toto ML will delete the whole folder containing those files, not just the files.
+
+        training_data_files (list)
             A list of the files used to train the model 
             That list could contain the history files but also the features files
+
+            Toto ML requires the files to be passed, because it will delete them from the filesystem after 
+            all mandatory operations have been performed, in order to avoid unnecessary local disk consumption
+            
+            IMPORTANT!
+            Note that Toto ML will delete the whole folder containing those files, not just the files.
 
         score (list)
             A list containing the score metrics
@@ -106,6 +118,12 @@ class ModelScore:
             It's important to provide these files, in any, in order for them to be deleted 
             by the controller when the scoring process is completed
         
+            Toto ML requires the files to be passed, because it will delete them from the filesystem after 
+            all mandatory operations have been performed, in order to avoid unnecessary local disk consumption
+            
+            IMPORTANT!
+            Note that Toto ML will delete the whole folder containing those files, not just the files.
+
         """
         self.score = score
         self.files = files
@@ -122,3 +140,46 @@ class ModelScore:
 
         # Delete the whole folder
         shutil.rmtree(folder)
+
+class ModelPrediction:
+    """
+    This class wraps a generic model prediction. 
+    This object is supposed to work both for single and batch predictions
+    """
+    def __init__(self, prediction=None, files=None):
+        """
+        Initializes this model prediction
+
+        Parameters
+        ----------
+        prediction (any, default None)   
+            This can be anything
+            It can be none (typical for batch predictions, where the data might be posted or just stored as file)
+        
+        files (list, default None)
+            A list of files used for the prediction
+            This list can also contain the predictions file itself
+
+            Toto ML requires the files to be passed, because it will delete them from the filesystem after 
+            all mandatory operations have been performed, in order to avoid unnecessary local disk consumption
+            
+            IMPORTANT!
+            Note that Toto ML will delete the whole folder containing those files, not just the files.
+
+        """
+        self.prediction = prediction
+        self.files = files
+
+    def delete_files(self, context):
+        """
+        Delete all the files associated with the prediction process
+        """
+        if self.files is None: return
+
+        filepath = self.files[0]
+
+        folder = filepath[:filepath.rfind('/')]
+
+        # Delete the whole folder
+        shutil.rmtree(folder)
+    

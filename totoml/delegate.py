@@ -81,6 +81,11 @@ class ModelDelegate(abc.ABC):
             The data can be anything. 
             It will be passed to the model for the prediction
 
+        Returns
+        -------
+        prediction (ModelPrediction):
+            The model prediction as described in model.ModelPrediction
+
         """
         pass
 

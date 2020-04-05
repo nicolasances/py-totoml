@@ -86,7 +86,6 @@ class ModelController:
                 model_info = registry.get_model_info(self.model_delegate.get_name())
 
 
-
         # Check if there's a champion model (pickle file, other files, ...) published on GCP Storage
         # If there's no model, upload the default model (local)
         # If there's no local model, train the model and upload the files
@@ -260,7 +259,16 @@ class ModelController:
         else: 
             correlation_id = cid()
 
-        return self.model_delegate.predict(self.model, ModelExecutionContext(correlation_id, 'PREDICT', online=online), data)
+        context = ModelExecutionContext(correlation_id, 'PREDICT', online=online)
+
+        # Do the prediction
+        prediction = self.model_delegate.predict(self.model, context, data)
+
+        # Delete the folder associated with the prediction (if any)
+        prediction.delete_files(context)
+
+        # Return the prediction
+        return prediction.prediction
     
     def predict_batch(self, data=None):
         """
@@ -271,7 +279,13 @@ class ModelController:
         else: 
             correlation_id = cid()
 
-        self.model_delegate.predict_batch(self.model, ModelExecutionContext(correlation_id, 'PREDICT BATCH'), data=data)
+        context = ModelExecutionContext(correlation_id, 'PREDICT BATCH')
+
+        # Do the prediction
+        prediction = self.model_delegate.predict_batch(self.model, context, data=data)
+
+        # Delete the folder associated with the prediction
+        prediction.delete_files(context)
 
     def promote(self, request=None): 
         """

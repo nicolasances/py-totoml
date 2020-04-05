@@ -14,7 +14,7 @@ from totoml.context import ModelExecutionContext
 from totoml.cid import cid
 from totoml.concurrent import ConcurrencyHelper
 
-from version import version
+from totoml.version import version
 
 logger = TotoLogger()
 

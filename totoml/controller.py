@@ -65,8 +65,11 @@ class ModelController:
         model_info = registry.get_model_info(self.model_delegate.get_name())
 
         # Make sure that the totoml SDK version registered in model_info is correct, otherwise correct it
-        if model_info is not None and ("totomlPythonSDKVersion" not in model_info or model_info['totomlPythonSDKVersion'] != version()): 
-            # Correct it
+        try: 
+            if model_info is not None and ("totomlPythonSDKVersion" not in model_info or model_info['totomlPythonSDKVersion'] != version()): 
+                # Correct it
+                registry.update_model_sdk_version(self.model_delegate.get_name(), version())
+        except KeyError: 
             registry.update_model_sdk_version(self.model_delegate.get_name(), version())
 
         # Check if the model exists on the registry. 

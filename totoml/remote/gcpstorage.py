@@ -43,6 +43,11 @@ class GCPStorage:
             The path of the local folder where the champion model's files have to be stored
 
         """
+        # Some validation
+        if model_info is None: 
+            logger.compute(self.correlation_id, '[ {ctx} ] - The model passed to load_champion_model() is empty'.format(ctx=self.context.process), 'error')
+            return
+
         try:
             bucket = client.get_bucket(bucket_name)
         except NotFound: 

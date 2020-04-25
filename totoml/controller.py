@@ -90,10 +90,10 @@ class ModelController:
                 
                 lock.release()
 
-                logger.compute(ctx.correlation_id, '[ {context} ] - Waiting complete: loading model information from Toto ML Registry'.format(context=ctx.process), 'info')
-
                 # Load the information that the other process has created
-                model_info = registry.get_model_info(self.model_delegate.get_name())
+                while model_info is None: 
+                    logger.compute(ctx.correlation_id, '[ {context} ] - Waiting complete: loading model information from Toto ML Registry'.format(context=ctx.process), 'info')
+                    model_info = registry.get_model_info(self.model_delegate.get_name())
 
 
         # Check if there's a champion model (pickle file, other files, ...) published on GCP Storage

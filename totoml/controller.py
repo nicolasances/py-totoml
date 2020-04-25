@@ -93,6 +93,7 @@ class ModelController:
                 # Load the information that the other process has created
                 while model_info is None: 
                     logger.compute(ctx.correlation_id, '[ {context} ] - Waiting complete: loading model information from Toto ML Registry'.format(context=ctx.process), 'info')
+                    time.sleep(5)
                     model_info = registry.get_model_info(self.model_delegate.get_name())
 
 
